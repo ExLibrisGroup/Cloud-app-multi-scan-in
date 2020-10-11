@@ -4,16 +4,116 @@
   </a>
   <h1>Configuration</h1>
 </div>
+<ng-template #loading_spinner>
+  <div class="loading-shade">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+  </div>
+</ng-template>
 <section>
-  <form (ngSubmit)="onSubmit(form)" #form="ngForm">
+  <form (ngSubmit)="onSubmit(form)" #form="ngForm" *ngIf="!loading; else loading_spinner">
     <mat-form-field>
       <mat-label>Library</mat-label>
-      <input name="library" matInput type="text" required ngModel />
+      <mat-select
+        ngModel
+        name="library"
+        [matTooltip]="constants.libraryTip"
+        required
+        #library="ngModel"
+        [(ngModel)]="config.mustConfig.library"
+      >
+        <mat-option *ngFor="let lib of libraries" [value]="lib.code">{{ lib.name }}</mat-option>
+      </mat-select>
     </mat-form-field>
-    <mat-form-field>
-      <mat-label>circ_desk</mat-label>
-      <input matInput type="text" required ngModel name="circ_desk" />
-    </mat-form-field>
-    <button mat-stroked-button color="primary" type="submit" [disabled]="!form.valid">Submit</button>
+    <span *ngIf="!library.valid && library.touched"><p>Please choose a library</p></span>
+    <div class="from" ngModelGroup="from" appFromvalidator #from="ngModelGroup">
+      <mat-form-field>
+        <mat-label>circ_desk</mat-label>
+        <input
+          matInput
+          [matTooltip]="constants.circTip"
+          type="text"
+          ngModel
+          name="circ_desk"
+          [(ngModel)]="config.from.circ_desk"
+        />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>department</mat-label>
+        <input
+          matInput
+          type="text"
+          [matTooltip]="constants.departmentTip"
+          ngModel
+          name="department"
+          [(ngModel)]="config.from.department"
+          #department
+        />
+      </mat-form-field>
+    </div>
+    <span *ngIf="!from.valid && from.touched"
+      ><p>Please choose at least one between circ_desk or department</p></span
+    >
+    <div class="check-boxs">
+      <mat-checkbox
+        name="auto_print_slip"
+        class="checkbox-margin"
+        [matTooltip]="constants.autoPrintSlipTip"
+        [(ngModel)]="this.config.mustConfig.auto_print_slip"
+        color="primary"
+        labelPosition="before"
+        >auto_print_slip</mat-checkbox
+      >
+      <mat-checkbox
+        name="place_on_hold_shelf"
+        class="checkbox-margin"
+        [matTooltip]="constants.placeOnHoldShelfTip"
+        [(ngModel)]="this.config.mustConfig.place_on_hold_shelf"
+        color="primary"
+        labelPosition="before"
+        >place_on_hold_shelf</mat-checkbox
+      >
+      <mat-checkbox
+        name="confirm"
+        class="checkbox-margin"
+        [matTooltip]="constants.confirmTip"
+        [(ngModel)]="this.config.mustConfig.confirm"
+        color="primary"
+        labelPosition="before"
+        >confirm</mat-checkbox
+      >
+      <mat-checkbox
+      name="register_in_house_use"
+      class="checkbox-margin"
+      [matTooltip]="constants.registerInHouseUseTip"
+      [(ngModel)]="this.config.mustConfig.register_in_house_use"
+      color="primary"
+      labelPosition="before"
+      >register_in_house_use</mat-checkbox
+    >
+    <mat-checkbox
+    name="external_id	"
+    class="checkbox-margin"
+    [matTooltip]="constants.externalIdTip"
+    [(ngModel)]="this.config.mustConfig.external_id	"
+    color="primary"
+    labelPosition="before"
+    >external_id</mat-checkbox
+  >
+      <div class="department-options" *ngIf="department.value !== ''">
+        <mat-checkbox
+          class="checkbox-margin"
+          name="done"
+          [matTooltip]="constants.doneTip"
+          [(ngModel)]="this.config.departmentArgs.done"
+          color="primary"
+          labelPosition="before"
+          >done</mat-checkbox
+        >
+      </div>
+    </div>
+    <br /><br /><br />
+    <button mat-stroked-button color="primary" type="submit" [disabled]="!form.valid">
+      Submit
+    </button>
   </form>
 </section>

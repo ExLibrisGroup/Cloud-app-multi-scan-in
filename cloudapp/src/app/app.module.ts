@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -12,7 +12,10 @@ import { MainComponent } from "./main/main.component";
 import { HelpComponent } from "./help/help.component";
 import { ConfigComponent } from "./config/config.component";
 import { NgxDropzoneModule } from "ngx-dropzone";
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from "@angular/forms";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatSelectModule } from "@angular/material/select";
+import { FromvalidatorDirective } from './config/fromvalidator.directive';
 
 export function getToastrModule() {
   return ToastrModule.forRoot({
@@ -22,7 +25,7 @@ export function getToastrModule() {
 }
 
 @NgModule({
-  declarations: [AppComponent, MainComponent, HelpComponent, ConfigComponent],
+  declarations: [AppComponent, MainComponent, HelpComponent, ConfigComponent, FromvalidatorDirective],
   imports: [
     MaterialModule,
     BrowserModule,
@@ -32,6 +35,8 @@ export function getToastrModule() {
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
+    MatSelectModule,
     NgxDropzoneModule,
     getTranslateModule(),
     getToastrModule(),

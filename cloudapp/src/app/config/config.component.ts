@@ -1,8 +1,19 @@
-import { ToastrService } from 'ngx-toastr';
-import { Component, OnInit } from "@angular/core";
+import { Constants } from './../constants';
+import { Library } from "./../models/library.model";
+import { ToastrService } from "ngx-toastr";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { CloudAppConfigService } from "@exlibris/exl-cloudapp-angular-lib";
-import { Configuration } from "../configuration.model";
+import {
+  CloudAppConfigService,
+  CloudAppEventsService,
+  Request,
+  CloudAppRestService,
+  HttpMethod,
+  RestErrorResponse,
+} from "@exlibris/exl-cloudapp-angular-lib";
+import { Configuration } from "../models/configuration.model";
+import { forkJoin } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-config",
@@ -10,26 +21,48 @@ import { Configuration } from "../configuration.model";
   styleUrls: ["./config.component.scss"],
 })
 export class ConfigComponent implements OnInit {
-  config: Configuration;
+  constants : Constants =new Constants();
+  config: Configuration = new Configuration();
+  libraries: Library[] = [];
+  loading: boolean = false;
 
-  constructor(private configService: CloudAppConfigService,private toastr:ToastrService) {}
+  constructor(
+    private configService: CloudAppConfigService,
+    private restService: CloudAppRestService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.configService.get().subscribe({
-      next: (res: Configuration) => {
-        if (res && Object.keys(res).length !== 0) {
-          this.config = res;
+    this.loading = true;
+    let rest = this.restService.call("/conf/libraries/");
+    let config = this.configService.get();
+    forkJoin({ rest, config }).subscribe({
+      next: (value) => {
+        this.libraries = value.rest.library as Library[];
+        //TODO
+        if (value.config && Object.keys(value.config).length !== 0) {
+          this.config = value.config;
         }
       },
-      error: (err: Error) => {
+      error: (err) => {
         console.error(err.message);
+        this.toastr.error(err.message);
+        this.loading = false;
+      },
+      complete: () => {
+        this.loading = false;
       },
     });
   }
 
   onSubmit(form: NgForm) {
-    this.config = form.value as Configuration;
-    this.configService.set(this.config).subscribe({next:()=>this.toastr.success('Updated Successfully')}); //TODO 
-    form.resetForm();
+    console.log(form);
+    this.configService.set(this.config).subscribe({
+      next: () => this.toastr.success("Updated Successfully"),
+      error: (err: RestErrorResponse) => {
+        console.error(err.message);
+        this.toastr.error(err.message);
+      },
+    }); //TODO
   }
 }

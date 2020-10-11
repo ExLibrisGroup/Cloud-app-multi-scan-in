@@ -1,15 +1,14 @@
-import { Subscription } from "rxjs";
 import { ToastrService } from "ngx-toastr";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import {
   CloudAppRestService,
-  CloudAppEventsService,
   Request,
   HttpMethod,
   CloudAppConfigService,
+  RestErrorResponse,
 } from "@exlibris/exl-cloudapp-angular-lib";
-import { map, switchMap } from "rxjs/operators";
-import { Configuration } from "../configuration.model";
+import { switchMap } from "rxjs/operators";
+import { Configuration } from "../models/configuration.model";
 
 @Component({
   selector: "app-main",
@@ -22,6 +21,8 @@ export class MainComponent implements OnInit {
   config: Configuration;
   loadingConfig: boolean = false;
   loadingBarcode: boolean = false;
+  scanInList: { title: string; additional_info: string; barcode: string }[] = [];
+  errorInList: { message: string; barcode: string }[] = [];
 
   constructor(
     private restService: CloudAppRestService,
@@ -35,18 +36,21 @@ export class MainComponent implements OnInit {
       next: (res: Configuration) => {
         if (res && Object.keys(res).length !== 0) {
           this.config = res;
-          console.log(this.config);
         }
+        this.loadingConfig=false;
       },
       error: (err: Error) => {
         this.toaster.error(err.message);
         console.error(err.message);
+        this.loadingConfig=false;
       },
     });
   }
 
   onSelect(event) {
     this.loadingBarcode = true;
+    this.barcodes = [];
+    this.files=[];
     event.addedFiles.forEach((file: File) => {
       file
         .text()
@@ -71,22 +75,39 @@ export class MainComponent implements OnInit {
   }
   private onNewBarcodes() {
     for (const barcode of this.barcodes) {
-      //TODO Query parameters comming from configutration
       this.restService
         .call("/items?item_barcode=" + barcode)
         .pipe(
           switchMap((res) => {
-            console.log("Item", res);
+            let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
+            queryParams.department !== ""
+              ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
+              : null;
             let requst: Request = {
               url: res.link,
               method: HttpMethod.POST,
-              queryParams: { op: "scan" ,...this.config },
+              queryParams,
             };
-            console.log(requst.queryParams);
             return this.restService.call(requst);
           })
         )
-        .subscribe((val) => console.log(val));
+        .subscribe({
+          next: (val) => {
+            this.scanInList.push({
+              title: val.bib_data.title,
+              additional_info: val.additional_info,
+              barcode: barcode,
+            });
+          },
+          error: (error: RestErrorResponse) => {
+            console.error(error.message);
+            this.toaster.error("Could not load barcode: " + barcode + " Due to " + error.message);
+            this.errorInList.push({
+              message: error.message,
+              barcode: barcode,
+            });
+          },
+        });
     }
   }
 }
