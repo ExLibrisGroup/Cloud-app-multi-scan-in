@@ -1,0 +1,19 @@
+<div class="title">
+  <a [routerLink]="['']" style="float: right">
+    <button mat-raised-button color="primary"><mat-icon>arrow_back</mat-icon>Back</button>
+  </a>
+  <h1>Configuration</h1>
+</div>
+<section>
+  <form (ngSubmit)="onSubmit(form)" #form="ngForm">
+    <mat-form-field>
+      <mat-label>Library</mat-label>
+      <input name="library" matInput type="text" required ngModel />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>circ_desk</mat-label>
+      <input matInput type="text" required ngModel name="circ_desk" />
+    </mat-form-field>
+    <button mat-stroked-button color="primary" type="submit" [disabled]="!form.valid">Submit</button>
+  </form>
+</section>
