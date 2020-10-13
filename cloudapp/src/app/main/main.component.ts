@@ -1,5 +1,5 @@
 import { ToastrService } from "ngx-toastr";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
   CloudAppRestService,
   Request,
@@ -8,11 +8,11 @@ import {
   RestErrorResponse,
   Entity,
 } from "@exlibris/exl-cloudapp-angular-lib";
-import { catchError, finalize, map, mergeMap, switchMap, tap } from "rxjs/operators";
+import { catchError, finalize, mergeMap, switchMap, tap } from "rxjs/operators";
 import { Configuration } from "../models/configuration.model";
-import { EMPTY, empty, from, Observable, observable, of, onErrorResumeNext } from "rxjs";
+import { EMPTY, from } from "rxjs";
 
-const MAX_PARALLEL_QUERIES = 1;
+const MAX_PARALLEL_QUERIES = 2;
 
 @Component({
   selector: "app-main",
@@ -106,13 +106,13 @@ export class MainComponent implements OnInit {
 
   private getByBarcode(barcode: string) {
     return this.restService.call("/items?item_barcode=" + barcode).pipe(
+      tap(() => this.processed++),
       catchError((e: RestErrorResponse) => {
         console.error(e.message);
-        this.toaster.error("Could not load barcode: " + barcode + " Due to " + e.message);
         this.errorInList.unshift({ barcode: barcode, message: e.message });
         return EMPTY;
       }),
-      tap(() => this.processed++),
+
       switchMap((res) => {
         let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
         queryParams.department !== ""
@@ -126,7 +126,6 @@ export class MainComponent implements OnInit {
         return this.restService.call(requst).pipe(
           catchError((e: RestErrorResponse) => {
             console.error(e.message);
-            this.toaster.error("Could not load barcode: " + barcode + " Due to " + e.message);
             this.errorInList.unshift({ barcode: barcode, message: e.message });
             return EMPTY;
           })

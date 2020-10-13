@@ -30,13 +30,16 @@
         </ngx-dropzone-preview>
       </ngx-dropzone>
       <br />
-      <mat-radio-button
-        matToolTip="Show the progress of the job"
-        [(ngModel)]="showProgress"
-        labelPosition="before"
-        color="primary"
-        >Show progress</mat-radio-button
-      >
+      <mat-radio-group>
+        <mat-radio-button
+          name="progress"
+          matToolTip="Show the progress of the job"
+          [(value)]="showProgress"
+          labelPosition="before"
+          color="primary"
+          >Show progress</mat-radio-button
+        >
+      </mat-radio-group>
     </div>
   </div>
   <section *ngIf="scanInList.length > 0">

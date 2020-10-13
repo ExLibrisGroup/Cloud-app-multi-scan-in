@@ -15,7 +15,9 @@ import { NgxDropzoneModule } from "ngx-dropzone";
 import { FormsModule } from "@angular/forms";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatSelectModule } from "@angular/material/select";
-import { FromvalidatorDirective } from './config/fromvalidator.directive';
+import { FromvalidatorDirective } from "./config/fromvalidator.directive";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import {MatRadioModule} from '@angular/material/radio';
 
 export function getToastrModule() {
   return ToastrModule.forRoot({
@@ -25,7 +27,13 @@ export function getToastrModule() {
 }
 
 @NgModule({
-  declarations: [AppComponent, MainComponent, HelpComponent, ConfigComponent, FromvalidatorDirective],
+  declarations: [
+    AppComponent,
+    MainComponent,
+    HelpComponent,
+    ConfigComponent,
+    FromvalidatorDirective,
+  ],
   imports: [
     MaterialModule,
     BrowserModule,
@@ -37,6 +45,8 @@ export function getToastrModule() {
     MatInputModule,
     MatCheckboxModule,
     MatSelectModule,
+    MatTooltipModule,
+    MatRadioModule,
     NgxDropzoneModule,
     getTranslateModule(),
     getToastrModule(),
