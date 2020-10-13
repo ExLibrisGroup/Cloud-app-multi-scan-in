@@ -10,33 +10,50 @@
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
   </div>
 </ng-template>
-<div *ngIf="!loadingConfig;else loading_spinner">
-<div *ngIf="config; else error_msg">
-  <h2>Please select or drag file of barcodes with line seprating between each barcode</h2>
-  <ngx-dropzone (change)="onSelect($event)" accept=".txt" [multiple]="false">
-    <ngx-dropzone-label>Choose barcode file</ngx-dropzone-label>
-    <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
-      <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>
-    </ngx-dropzone-preview>
-  </ngx-dropzone>
+<ng-template #loading_barcode_spinner>
+  <div class="loading-shade">
+    <mat-progress-spinner
+      [value]="percentComplete"
+      [mode]="showProgress ? 'determinate' : 'indeterminate'"
+      diameter="50"
+    ></mat-progress-spinner>
+  </div>
+</ng-template>
+<div *ngIf="!loadingConfig; else loading_spinner">
+  <div *ngIf="!loadingBarcode; else loading_barcode_spinner">
+    <div *ngIf="config; else error_msg">
+      <h2>Please select or drag file of barcodes with line seprating between each barcode</h2>
+      <ngx-dropzone (change)="onSelect($event)" accept=".txt" [multiple]="false">
+        <ngx-dropzone-label>Choose barcode file</ngx-dropzone-label>
+        <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+          <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>
+        </ngx-dropzone-preview>
+      </ngx-dropzone>
+      <br />
+      <mat-radio-button
+        matToolTip="Show the progress of the job"
+        [(ngModel)]="showProgress"
+        labelPosition="before"
+        color="primary"
+        >Show progress</mat-radio-button
+      >
+    </div>
+  </div>
+  <section *ngIf="scanInList.length > 0">
+    <h2 style="color: green">Scanned In:</h2>
+    <ul style="padding: 10px">
+      <li style="margin: 0" *ngFor="let scan of scanInList">
+        <strong> Barcode </strong>: {{ scan.barcode }} <strong> Title :</strong> {{ scan.title }}
+        <strong> Info: </strong>{{ scan.additional_info }}
+      </li>
+    </ul>
+  </section>
+  <section *ngIf="errorInList.length > 0">
+    <h2 style="color: red">Errors:</h2>
+    <ul style="padding: 10px">
+      <li style="margin: 0" *ngFor="let scan of errorInList">
+        <strong> Barcode </strong>: {{ scan.barcode }} <strong> Info: </strong>{{ scan.message }}
+      </li>
+    </ul>
+  </section>
 </div>
-<section *ngIf="scanInList.length > 0">
-  <h2 style="color: green">Scanned In:</h2>
-  <ul style="padding: 10px;">
-    <li style="margin: 0;" *ngFor="let scan of scanInList">
-      <strong> Barcode </strong>: {{ scan.barcode }} <strong> Title :</strong> {{ scan.title }}
-      <strong> Info: </strong>{{ scan.additional_info }}
-    </li>
-  </ul>
-</section>
-<section *ngIf="errorInList.length > 0">
-  <h2 style="color: red">Errors:</h2>
-  <ul style="padding: 10px;">
-    <li style="margin: 0;" *ngFor="let scan of errorInList">
-      <strong> Barcode </strong>: {{ scan.barcode }} 
-      <strong> Info: </strong>{{ scan.message }}
-    </li>
-  </ul>
-</section>
-</div>
-
