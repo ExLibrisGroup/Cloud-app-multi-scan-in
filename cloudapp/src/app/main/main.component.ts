@@ -12,7 +12,7 @@ import { catchError, finalize, mergeMap, switchMap, tap } from "rxjs/operators";
 import { Configuration } from "../models/configuration.model";
 import { EMPTY, from } from "rxjs";
 
-const MAX_PARALLEL_QUERIES = 2;
+const MAX_PARALLEL_QUERIES = 1;
 
 @Component({
   selector: "app-main",
@@ -82,6 +82,10 @@ export class MainComponent implements OnInit {
     let observables = Array.from(this.barcodes, (barcode) => this.getByBarcode(barcode));
     from(observables)
       .pipe(
+        tap(() => {
+          this.processed++;
+          console.log(this.percentComplete)
+        }),
         mergeMap((observable) => observable, MAX_PARALLEL_QUERIES),
         finalize(() => {
           this.loadingBarcode = false;
@@ -91,7 +95,10 @@ export class MainComponent implements OnInit {
         next: (partialResults) => {
           allResults = allResults.concat(partialResults);
         },
-        error: (err) => console.log("Error", err),
+        error: (err) => {
+          console.error("Error", err);
+          this.processed++;
+        },
         complete: () => {
           allResults.forEach((val) =>
             this.scanInList.push({
@@ -106,18 +113,13 @@ export class MainComponent implements OnInit {
 
   private getByBarcode(barcode: string) {
     return this.restService.call("/items?item_barcode=" + barcode).pipe(
-      tap(() => this.processed++),
       catchError((e: RestErrorResponse) => {
         console.error(e.message);
         this.errorInList.unshift({ barcode: barcode, message: e.message });
         return EMPTY;
       }),
-
       switchMap((res) => {
-        let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
-        queryParams.department !== ""
-          ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
-          : null;
+        let queryParams = this.getQueryParams();
         let requst: Request = {
           url: res.link,
           method: HttpMethod.POST,
@@ -133,6 +135,14 @@ export class MainComponent implements OnInit {
       })
     );
   }
+  private getQueryParams() {
+    let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
+    queryParams.department !== ""
+      ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
+      : null;
+    return queryParams;
+  }
+
   get percentComplete() {
     let len = this.barcodes.length !== 0 ? this.barcodes.length : this.processed;
     return Math.round((this.processed / len) * 100);

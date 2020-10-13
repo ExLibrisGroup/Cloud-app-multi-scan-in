@@ -1,7 +1,7 @@
 {
    "id": "multi-scan-in",
-   "title": "Multi ScanIn",
-   "description": "Multi ScanIn",
+   "title": "Multi Scan In",
+   "description": "Multi Scan In",
    "pages": {
       "help": "/#/help",
       "config": "/#/config"

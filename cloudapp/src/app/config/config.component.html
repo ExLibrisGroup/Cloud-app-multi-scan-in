@@ -53,64 +53,64 @@
     <span *ngIf="!from.valid && from.touched"
       ><p>Please choose at least one between circ_desk or department</p></span
     >
-    <div class="check-boxs">
-      <mat-checkbox
+      <mat-slide-toggle
         name="auto_print_slip"
-        class="checkbox-margin"
         [matTooltip]="constants.autoPrintSlipTip"
+        matTooltipPosition="right"
         [(ngModel)]="this.config.mustConfig.auto_print_slip"
         color="primary"
-        labelPosition="before"
-        >auto_print_slip</mat-checkbox
-      >
-      <mat-checkbox
+        labelPosition="after"
+        >Auto print slip</mat-slide-toggle>
+        <br>
+        <mat-slide-toggle
         name="place_on_hold_shelf"
-        class="checkbox-margin"
         [matTooltip]="constants.placeOnHoldShelfTip"
+        matTooltipPosition="right"
         [(ngModel)]="this.config.mustConfig.place_on_hold_shelf"
         color="primary"
-        labelPosition="before"
-        >place_on_hold_shelf</mat-checkbox
-      >
-      <mat-checkbox
+        labelPosition="after"
+        >Place on hold shelf</mat-slide-toggle>
+        <br>
+        <mat-slide-toggle
         name="confirm"
-        class="checkbox-margin"
         [matTooltip]="constants.confirmTip"
+        matTooltipPosition="right"
         [(ngModel)]="this.config.mustConfig.confirm"
         color="primary"
-        labelPosition="before"
-        >confirm</mat-checkbox
-      >
-      <mat-checkbox
-      name="register_in_house_use"
-      class="checkbox-margin"
-      [matTooltip]="constants.registerInHouseUseTip"
-      [(ngModel)]="this.config.mustConfig.register_in_house_use"
-      color="primary"
-      labelPosition="before"
-      >register_in_house_use</mat-checkbox
-    >
-    <mat-checkbox
-    name="external_id	"
-    class="checkbox-margin"
-    [matTooltip]="constants.externalIdTip"
-    [(ngModel)]="this.config.mustConfig.external_id	"
-    color="primary"
-    labelPosition="before"
-    >external_id</mat-checkbox
-  >
+        labelPosition="after"
+        >Confirm</mat-slide-toggle>
+        <br>
+
+        <mat-slide-toggle
+        name="register_in_house_use"
+        [matTooltip]="constants.registerInHouseUseTip"
+        matTooltipPosition="right"
+        [(ngModel)]="this.config.mustConfig.register_in_house_use"
+        color="primary"
+        labelPosition="after"
+        >Register in house use</mat-slide-toggle>
+        <br>
+        <mat-slide-toggle
+        name="external_id	"
+        [matTooltip]="constants.externalIdTip"
+        matTooltipPosition="right"
+        [(ngModel)]="this.config.mustConfig.external_id	"
+        color="primary"
+        labelPosition="after"
+        >External ID</mat-slide-toggle>
+        <br>
+
       <div class="department-options" *ngIf="department.value !== ''">
-        <mat-checkbox
-          class="checkbox-margin"
-          name="done"
-          [matTooltip]="constants.doneTip"
-          [(ngModel)]="this.config.departmentArgs.done"
-          color="primary"
-          labelPosition="before"
-          >done</mat-checkbox
-        >
+        <mat-slide-toggle
+        name="done"
+        [matTooltip]="constants.doneTip"
+        matTooltipPosition="right"
+        [(ngModel)]="this.config.departmentArgs.done"
+        color="primary"
+        labelPosition="after"
+        >Done</mat-slide-toggle>
+        <br>
       </div>
-    </div>
     <br /><br /><br />
     <button mat-stroked-button color="primary" type="submit" [disabled]="!form.valid">
       Submit

@@ -18,6 +18,8 @@ import { MatSelectModule } from "@angular/material/select";
 import { FromvalidatorDirective } from "./config/fromvalidator.directive";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import {MatRadioModule} from '@angular/material/radio';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
 
 export function getToastrModule() {
   return ToastrModule.forRoot({
@@ -47,6 +49,7 @@ export function getToastrModule() {
     MatSelectModule,
     MatTooltipModule,
     MatRadioModule,
+    MatSlideToggleModule,
     NgxDropzoneModule,
     getTranslateModule(),
     getToastrModule(),
