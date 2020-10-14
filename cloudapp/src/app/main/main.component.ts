@@ -6,13 +6,12 @@ import {
   HttpMethod,
   CloudAppConfigService,
   RestErrorResponse,
-  Entity,
 } from "@exlibris/exl-cloudapp-angular-lib";
 import { catchError, finalize, mergeMap, switchMap, tap } from "rxjs/operators";
 import { Configuration } from "../models/configuration.model";
-import { EMPTY, from } from "rxjs";
+import { EMPTY, from, observable } from "rxjs";
 
-const MAX_PARALLEL_QUERIES = 1;
+const MAX_PARALLEL_QUERIES = 10;
 
 @Component({
   selector: "app-main",
@@ -82,10 +81,6 @@ export class MainComponent implements OnInit {
     let observables = Array.from(this.barcodes, (barcode) => this.getByBarcode(barcode));
     from(observables)
       .pipe(
-        tap(() => {
-          this.processed++;
-          console.log(this.percentComplete)
-        }),
         mergeMap((observable) => observable, MAX_PARALLEL_QUERIES),
         finalize(() => {
           this.loadingBarcode = false;
@@ -97,7 +92,6 @@ export class MainComponent implements OnInit {
         },
         error: (err) => {
           console.error("Error", err);
-          this.processed++;
         },
         complete: () => {
           allResults.forEach((val) =>
@@ -113,11 +107,7 @@ export class MainComponent implements OnInit {
 
   private getByBarcode(barcode: string) {
     return this.restService.call("/items?item_barcode=" + barcode).pipe(
-      catchError((e: RestErrorResponse) => {
-        console.error(e.message);
-        this.errorInList.unshift({ barcode: barcode, message: e.message });
-        return EMPTY;
-      }),
+      catchError(this.barcodeErrorCallback(barcode)),
       switchMap((res) => {
         let queryParams = this.getQueryParams();
         let requst: Request = {
@@ -126,14 +116,22 @@ export class MainComponent implements OnInit {
           queryParams,
         };
         return this.restService.call(requst).pipe(
-          catchError((e: RestErrorResponse) => {
-            console.error(e.message);
-            this.errorInList.unshift({ barcode: barcode, message: e.message });
-            return EMPTY;
+          catchError(this.barcodeErrorCallback(barcode)),
+          tap(() => {
+            this.processed++;
           })
         );
       })
     );
+  }
+  private barcodeErrorCallback(barcode: string) {
+    return (e: RestErrorResponse) => {
+      console.error(e.message);
+      this.errorInList.unshift({ barcode: barcode, message: e.message });
+      this.processed++;
+
+      return EMPTY;
+    };
   }
   private getQueryParams() {
     let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
