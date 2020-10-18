@@ -35,6 +35,7 @@
           ngModel
           name="circ_desk"
           [(ngModel)]="config.from.circ_desk"
+          #circ_desk
         />
       </mat-form-field>
       <mat-form-field>
@@ -51,69 +52,80 @@
       </mat-form-field>
     </div>
     <span *ngIf="!from.valid && from.touched"
-      ><p>Please choose at least one between circ_desk or department</p></span
+      ><p>Please choose one between circ_desk or department</p></span
     >
+    <mat-slide-toggle
+      name="auto_print_slip"
+      [matTooltip]="constants.autoPrintSlipTip"
+      matTooltipPosition="right"
+      [(ngModel)]="this.config.mustConfig.auto_print_slip"
+      color="primary"
+      labelPosition="after"
+      >Auto print slip</mat-slide-toggle
+    >
+    <br />
+    <mat-slide-toggle
+      name="confirm"
+      [matTooltip]="constants.confirmTip"
+      matTooltipPosition="right"
+      [(ngModel)]="this.config.mustConfig.confirm"
+      color="primary"
+      labelPosition="after"
+      >Confirm</mat-slide-toggle
+    >
+    <br />
+
+    <mat-slide-toggle
+      name="register_in_house_use"
+      [matTooltip]="constants.registerInHouseUseTip"
+      matTooltipPosition="right"
+      [(ngModel)]="this.config.mustConfig.register_in_house_use"
+      color="primary"
+      labelPosition="after"
+      >Register in house use</mat-slide-toggle
+    >
+    <br />
+    <mat-slide-toggle
+      name="external_id	"
+      [matTooltip]="constants.externalIdTip"
+      matTooltipPosition="right"
+      [(ngModel)]="this.config.mustConfig.external_id"
+      color="primary"
+      labelPosition="after"
+      >External ID</mat-slide-toggle
+    >
+    <br />
+
+    <div class="department-options" *ngIf="department.value !== ''">
       <mat-slide-toggle
-        name="auto_print_slip"
-        [matTooltip]="constants.autoPrintSlipTip"
-        matTooltipPosition="right"
-        [(ngModel)]="this.config.mustConfig.auto_print_slip"
-        color="primary"
-        labelPosition="after"
-        >Auto print slip</mat-slide-toggle>
-        <br>
-        <mat-slide-toggle
-        name="place_on_hold_shelf"
-        [matTooltip]="constants.placeOnHoldShelfTip"
-        matTooltipPosition="right"
-        [(ngModel)]="this.config.mustConfig.place_on_hold_shelf"
-        color="primary"
-        labelPosition="after"
-        >Place on hold shelf</mat-slide-toggle>
-        <br>
-        <mat-slide-toggle
-        name="confirm"
-        [matTooltip]="constants.confirmTip"
-        matTooltipPosition="right"
-        [(ngModel)]="this.config.mustConfig.confirm"
-        color="primary"
-        labelPosition="after"
-        >Confirm</mat-slide-toggle>
-        <br>
-
-        <mat-slide-toggle
-        name="register_in_house_use"
-        [matTooltip]="constants.registerInHouseUseTip"
-        matTooltipPosition="right"
-        [(ngModel)]="this.config.mustConfig.register_in_house_use"
-        color="primary"
-        labelPosition="after"
-        >Register in house use</mat-slide-toggle>
-        <br>
-        <mat-slide-toggle
-        name="external_id	"
-        [matTooltip]="constants.externalIdTip"
-        matTooltipPosition="right"
-        [(ngModel)]="this.config.mustConfig.external_id	"
-        color="primary"
-        labelPosition="after"
-        >External ID</mat-slide-toggle>
-        <br>
-
-      <div class="department-options" *ngIf="department.value !== ''">
-        <mat-slide-toggle
         name="done"
         [matTooltip]="constants.doneTip"
         matTooltipPosition="right"
         [(ngModel)]="this.config.departmentArgs.done"
         color="primary"
         labelPosition="after"
-        >Done</mat-slide-toggle>
-        <br>
-      </div>
+        >Done</mat-slide-toggle
+      >
+      <br />
+    </div>
+    <div class="circ-options" *ngIf="circ_desk.value !== ''">
+      <mat-slide-toggle
+        name="place_on_hold_shelf"
+        [matTooltip]="constants.placeOnHoldShelfTip"
+        matTooltipPosition="right"
+        [(ngModel)]="this.config.circArgs.place_on_hold_shelf"
+        color="primary"
+        labelPosition="after"
+        >Place on hold shelf</mat-slide-toggle
+      >
+      <br />
+    </div>
     <br /><br /><br />
     <button mat-stroked-button color="primary" type="submit" [disabled]="!form.valid">
       Submit
+    </button>
+    <button mat-stroked-button color="primary" type="button" (click)="onRestore()" style="margin-left: 4px;">
+      Restore Defaults
     </button>
   </form>
 </section>

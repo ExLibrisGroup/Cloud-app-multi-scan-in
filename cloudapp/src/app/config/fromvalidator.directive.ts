@@ -21,7 +21,8 @@ export class FromvalidatorDirective {
         control.value != null &&
         control.value.circ_desk != null &&
         control.value.department != null &&
-        (control.value.circ_desk !== "" || control.value.department !== "");
+        ((control.value.circ_desk !== "" && control.value.department === "") ||
+          (control.value.circ_desk === "" && control.value.department !== ""));
       if (isValid) {
         return null;
       } else {

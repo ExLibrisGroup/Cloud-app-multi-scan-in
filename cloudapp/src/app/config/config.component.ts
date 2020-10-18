@@ -1,19 +1,15 @@
-import { Constants } from './../constants';
+import { Constants } from "./../constants";
 import { Library } from "./../models/library.model";
 import { ToastrService } from "ngx-toastr";
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import {
   CloudAppConfigService,
-  CloudAppEventsService,
-  Request,
   CloudAppRestService,
-  HttpMethod,
   RestErrorResponse,
 } from "@exlibris/exl-cloudapp-angular-lib";
 import { Configuration } from "../models/configuration.model";
 import { forkJoin } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-config",
@@ -21,7 +17,7 @@ import { map, switchMap } from "rxjs/operators";
   styleUrls: ["./config.component.scss"],
 })
 export class ConfigComponent implements OnInit {
-  constants : Constants =new Constants();
+  constants: Constants = new Constants();
   config: Configuration = new Configuration();
   libraries: Library[] = [];
   loading: boolean = false;
@@ -36,6 +32,7 @@ export class ConfigComponent implements OnInit {
     this.loading = true;
     let rest = this.restService.call("/conf/libraries/");
     let config = this.configService.get();
+
     forkJoin({ rest, config }).subscribe({
       next: (value) => {
         this.libraries = value.rest.library as Library[];
@@ -64,5 +61,8 @@ export class ConfigComponent implements OnInit {
         this.toastr.error(err.message);
       },
     }); //TODO
+  }
+  onRestore() {
+    this.config = new Configuration();
   }
 }

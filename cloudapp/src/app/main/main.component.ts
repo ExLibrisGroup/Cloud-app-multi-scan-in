@@ -94,6 +94,7 @@ export class MainComponent implements OnInit {
           console.error("Error", err);
         },
         complete: () => {
+          console.log(allResults[0]);
           allResults.forEach((val) =>
             this.scanInList.push({
               title: val.bib_data.title,
@@ -109,7 +110,8 @@ export class MainComponent implements OnInit {
     return this.restService.call("/items?item_barcode=" + barcode).pipe(
       catchError(this.barcodeErrorCallback(barcode)),
       switchMap((res) => {
-        let queryParams = this.getQueryParams();
+        // let queryParams = this.getQueryParams();
+        let queryParams = {op:"scan",library:"GRAD",circ_desk:"DEFAULT_CIRC_DESK"} //tODO
         let requst: Request = {
           url: res.link,
           method: HttpMethod.POST,
@@ -136,6 +138,9 @@ export class MainComponent implements OnInit {
   private getQueryParams() {
     let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
     queryParams.department !== ""
+      ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
+      : null;
+    queryParams.circ_desk !== ""
       ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
       : null;
     return queryParams;
