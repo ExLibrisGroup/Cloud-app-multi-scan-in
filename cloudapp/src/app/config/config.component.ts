@@ -36,7 +36,7 @@ export class ConfigComponent implements OnInit {
     forkJoin({ rest, config }).subscribe({
       next: (value) => {
         this.libraries = value.rest.library as Library[];
-        //TODO
+
         if (value.config && Object.keys(value.config).length !== 0) {
           this.config = value.config;
         }
@@ -60,7 +60,7 @@ export class ConfigComponent implements OnInit {
         console.error(err.message);
         this.toastr.error(err.message);
       },
-    }); //TODO
+    }); 
   }
   onRestore() {
     this.config = new Configuration();

@@ -1,9 +1,14 @@
 {
    "id": "multi-scan-in",
-   "title": "Multi Scan In",
+   "title": "Scan in list of items",
    "description": "Multi Scan In",
    "pages": {
       "help": "/#/help",
       "config": "/#/config"
+   },
+   "author": "Liron Menda",
+   "icon": {
+      "type": "font",
+      "value": "fa fa-barcode"
    }
 }

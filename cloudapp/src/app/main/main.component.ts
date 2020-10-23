@@ -11,7 +11,7 @@ import { catchError, finalize, mergeMap, switchMap, tap } from "rxjs/operators";
 import { Configuration } from "../models/configuration.model";
 import { EMPTY, from, observable } from "rxjs";
 
-const MAX_PARALLEL_QUERIES = 10;
+const MAX_PARALLEL_QUERIES :number = 10;
 
 @Component({
   selector: "app-main",
@@ -110,8 +110,7 @@ export class MainComponent implements OnInit {
     return this.restService.call("/items?item_barcode=" + barcode).pipe(
       catchError(this.barcodeErrorCallback(barcode)),
       switchMap((res) => {
-        // let queryParams = this.getQueryParams();
-        let queryParams = {op:"scan",library:"GRAD",circ_desk:"DEFAULT_CIRC_DESK"} //tODO
+        let queryParams = this.getQueryParams();
         let requst: Request = {
           url: res.link,
           method: HttpMethod.POST,
