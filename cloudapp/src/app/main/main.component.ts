@@ -9,7 +9,7 @@ import {
 } from "@exlibris/exl-cloudapp-angular-lib";
 import { catchError, finalize, mergeMap, switchMap, tap } from "rxjs/operators";
 import { Configuration } from "../models/configuration.model";
-import { EMPTY, from, observable } from "rxjs";
+import { EMPTY, from } from "rxjs";
 
 const MAX_PARALLEL_QUERIES :number = 10;
 

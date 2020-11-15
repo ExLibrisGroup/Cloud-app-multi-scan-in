@@ -10,6 +10,7 @@ import {
 } from "@exlibris/exl-cloudapp-angular-lib";
 import { Configuration } from "../models/configuration.model";
 import { forkJoin } from "rxjs";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-config",
@@ -25,7 +26,8 @@ export class ConfigComponent implements OnInit {
   constructor(
     private configService: CloudAppConfigService,
     private restService: CloudAppRestService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router : Router
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +57,7 @@ export class ConfigComponent implements OnInit {
   onSubmit(form: NgForm) {
     console.log(form);
     this.configService.set(this.config).subscribe({
-      next: () => this.toastr.success("Updated Successfully"),
+      next: () => {this.toastr.success("Updated Successfully");this.router.navigate([''])},
       error: (err: RestErrorResponse) => {
         console.error(err.message);
         this.toastr.error(err.message);
