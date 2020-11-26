@@ -1,9 +1,6 @@
-<section>
-  <h1> Upload file of barcodes to scan in</h1>
-</section>
 <ng-template #error_msg>
-  <h2>This app needs to be configured first</h2>
-  <a [routerLink]="['config']">To configuration</a>
+  <h1>This app needs to be configured first</h1>
+  <a [routerLink]="['settings']">To settings</a>
 </ng-template>
 <ng-template #loading_spinner>
   <div class="loading-shade">
@@ -12,18 +9,20 @@
 </ng-template>
 <ng-template #loading_barcode_spinner>
   <div class="loading-shade">
-    <mat-progress-spinner
-      [value]="percentComplete"
-      mode="determinate"
-      diameter="50"
-    ></mat-progress-spinner>
+    <mat-progress-spinner [value]="percentComplete" mode="determinate" diameter="50"></mat-progress-spinner>
   </div>
 </ng-template>
 <div *ngIf="!loadingConfig; else loading_spinner">
   <div *ngIf="!loadingBarcode; else loading_barcode_spinner">
     <div *ngIf="config; else error_msg">
+      <div class="eca-actions">
+        <button mat-flat-button color="secondary" (click)="onReset()">Reset</button
+        ><button mat-flat-button color="primary" (click)="onNewBarcodes()">Scan</button>
+      </div>
+
+      <h1>Upload file of barcodes to scan in</h1>
       <h2>Please select or drag file of barcodes with line seprating between each barcode</h2>
-      <ngx-dropzone (change)="onSelect($event)" accept=".txt" [multiple]="false">
+      <ngx-dropzone (change)="onSelect($event)" accept=".txt" [multiple]="false" #drop>
         <ngx-dropzone-label>Choose barcode file</ngx-dropzone-label>
         <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
           <ngx-dropzone-label>{{ f.name }}</ngx-dropzone-label>

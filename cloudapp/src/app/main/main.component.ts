@@ -1,17 +1,17 @@
-import { ToastrService } from "ngx-toastr";
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import {
   CloudAppRestService,
   Request,
   HttpMethod,
-  CloudAppConfigService,
   RestErrorResponse,
+  AlertService,
+  CloudAppSettingsService,
 } from "@exlibris/exl-cloudapp-angular-lib";
-import { catchError, finalize, mergeMap, switchMap, tap } from "rxjs/operators";
+import { catchError, finalize, mergeMap, scan, switchMap, tap } from "rxjs/operators";
 import { Configuration } from "../models/configuration.model";
 import { EMPTY, from } from "rxjs";
 
-const MAX_PARALLEL_QUERIES :number = 10;
+const MAX_PARALLEL_QUERIES: number = 10;
 
 @Component({
   selector: "app-main",
@@ -19,6 +19,7 @@ const MAX_PARALLEL_QUERIES :number = 10;
   styleUrls: ["./main.component.scss"],
 })
 export class MainComponent implements OnInit {
+  @ViewChild("drop", { static: false }) dropZone: any;
   files: File[] = [];
   barcodes: string[] = [];
   config: Configuration;
@@ -31,13 +32,13 @@ export class MainComponent implements OnInit {
 
   constructor(
     private restService: CloudAppRestService,
-    private toaster: ToastrService,
-    private configService: CloudAppConfigService
+    private alert: AlertService,
+    private settingsService: CloudAppSettingsService
   ) {}
 
   ngOnInit() {
     this.loadingConfig = true;
-    this.configService.get().subscribe({
+    this.settingsService.get().subscribe({
       next: (res: Configuration) => {
         if (res && Object.keys(res).length !== 0) {
           this.config = res;
@@ -45,7 +46,7 @@ export class MainComponent implements OnInit {
         this.loadingConfig = false;
       },
       error: (err: Error) => {
-        this.toaster.error(err.message);
+        this.alert.error(err.message);
         console.error(err.message);
         this.loadingConfig = false;
       },
@@ -54,29 +55,36 @@ export class MainComponent implements OnInit {
 
   onSelect(event) {
     this.loadingBarcode = true;
-    this.barcodes = [];
-    this.files = [];
-    this.processed = 0;
+    this.onReset();
     event.addedFiles.forEach((file: File) => {
       file
         .text()
         .then<void>((barcodes: string): void => {
           this.barcodes.push(...barcodes.split(/\r?\n/).filter((e) => e));
-          this.onNewBarcodes();
         })
         .catch((reason) => {
-          this.toaster.error("Could not load file :" + reason);
+          this.alert.error("Could not load file :" + reason);
           Promise.reject(reason);
-        });
+        })
+        .finally(() => (this.loadingBarcode = false));
     });
     this.files.push(...event.addedFiles);
+  }
+
+  onReset() {
+    this.barcodes = [];
+    this.scanInList=[];
+    this.errorInList = [];
+    this.files = [];
+    this.processed = 0;
   }
 
   onRemove(event) {
     console.log(event);
     this.files.splice(this.files.indexOf(event), 1);
   }
-  private onNewBarcodes() {
+  onNewBarcodes() {
+    this.loadingBarcode=true;
     let allResults = [];
     let observables = Array.from(this.barcodes, (barcode) => this.getByBarcode(barcode));
     from(observables)
@@ -136,12 +144,8 @@ export class MainComponent implements OnInit {
   }
   private getQueryParams() {
     let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
-    queryParams.department !== ""
-      ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
-      : null;
-    queryParams.circ_desk !== ""
-      ? (queryParams = { ...queryParams, ...this.config.departmentArgs })
-      : null;
+    queryParams.department !== "" ? (queryParams = { ...queryParams, ...this.config.departmentArgs }) : null;
+    queryParams.circ_desk !== "" ? (queryParams = { ...queryParams, ...this.config.departmentArgs }) : null;
     return queryParams;
   }
 

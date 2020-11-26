@@ -1,10 +1,10 @@
 {
    "id": "multi-scan-in",
-   "title": "Scan in list of items",
-   "description": "Multi Scan In",
+   "title": "Scan in file of items",
+   "description": "This app allows you to perform the scan in operation on file of barcodes.",
    "pages": {
       "help": "/#/help",
-      "config": "/#/config"
+      "settings": "/#/settings"
    },
    "author": "Liron Menda",
    "icon": {

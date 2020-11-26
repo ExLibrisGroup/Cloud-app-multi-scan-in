@@ -4,8 +4,10 @@ import { ToastrService } from "ngx-toastr";
 import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import {
+  AlertService,
   CloudAppConfigService,
   CloudAppRestService,
+  CloudAppSettingsService,
   RestErrorResponse,
 } from "@exlibris/exl-cloudapp-angular-lib";
 import { Configuration } from "../models/configuration.model";
@@ -13,27 +15,27 @@ import { forkJoin } from "rxjs";
 import { Router } from "@angular/router";
 
 @Component({
-  selector: "app-config",
-  templateUrl: "./config.component.html",
-  styleUrls: ["./config.component.scss"],
+  selector: "app-settings",
+  templateUrl: "./settings.component.html",
+  styleUrls: ["./settings.component.scss"],
 })
-export class ConfigComponent implements OnInit {
+export class SettingsComponent implements OnInit {
   constants: Constants = new Constants();
   config: Configuration = new Configuration();
   libraries: Library[] = [];
   loading: boolean = false;
 
   constructor(
-    private configService: CloudAppConfigService,
+    private settingsService: CloudAppSettingsService,
     private restService: CloudAppRestService,
-    private toastr: ToastrService,
-    private router : Router
+    private alert: AlertService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loading = true;
     let rest = this.restService.call("/conf/libraries/");
-    let config = this.configService.get();
+    let config = this.settingsService.get();
 
     forkJoin({ rest, config }).subscribe({
       next: (value) => {
@@ -45,7 +47,7 @@ export class ConfigComponent implements OnInit {
       },
       error: (err) => {
         console.error(err.message);
-        this.toastr.error(err.message);
+        this.alert.error(err.message);
         this.loading = false;
       },
       complete: () => {
@@ -56,13 +58,16 @@ export class ConfigComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     console.log(form);
-    this.configService.set(this.config).subscribe({
-      next: () => {this.toastr.success("Updated Successfully");this.router.navigate([''])},
+    this.settingsService.set(this.config).subscribe({
+      next: () => {
+        this.alert.success("Updated Successfully", { keepAfterRouteChange: true });
+        this.router.navigate([""]);
+      },
       error: (err: RestErrorResponse) => {
         console.error(err.message);
-        this.toastr.error(err.message);
+        this.alert.error(err.message);
       },
-    }); 
+    });
   }
   onRestore() {
     this.config = new Configuration();
