@@ -10,5 +10,12 @@
    "icon": {
       "type": "font",
       "value": "fa fa-barcode"
+   },
+   "contentSecurity": {
+      "connectSrc": [
+      ],
+      "sandbox": {
+         "popups": true
+      }
    }
 }
