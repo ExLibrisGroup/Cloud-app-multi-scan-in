@@ -1,12 +1,13 @@
 {
    "id": "multi-scan-in",
-   "title": "Scan in file of items",
-   "description": "This app allows you to perform the scan in operation on file of barcodes.",
+   "title": "Bulk Scan-In",
+   "subtitle": "Scan-in file of barcodes",
+   "author": "Ex Libris",
+   "description": "This app allows you to perform the scan in operation on file of barcodes. Supports configuring library, circulation desk, department, and scan-in properties.",
    "pages": {
       "help": "/#/help",
       "settings": "/#/settings"
    },
-   "author": "Liron Menda",
    "icon": {
       "type": "font",
       "value": "fa fa-barcode"
