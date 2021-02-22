@@ -12,8 +12,7 @@
       "value": "fa fa-barcode"
    },
    "contentSecurity": {
-      "connectSrc": [
-      ],
+      "connectSrc": [],
       "sandbox": {
          "popups": true
       }
