@@ -115,7 +115,7 @@ export class MainComponent implements OnInit {
   }
 
   private getByBarcode(barcode: string) {
-    return this.restService.call("/items?item_barcode=" + barcode).pipe(
+    return this.restService.call("/items?item_barcode=" + encodeURIComponent(barcode)).pipe(
       catchError(this.barcodeErrorCallback(barcode)),
       switchMap((res) => {
         let queryParams = this.getQueryParams();
