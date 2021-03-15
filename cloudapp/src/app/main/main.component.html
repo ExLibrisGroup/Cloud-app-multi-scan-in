@@ -21,7 +21,7 @@
       </div>
 
       <h1>Upload file of barcodes to scan in</h1>
-      <h2>Please select or drag file of barcodes with line seprating between each barcode</h2>
+      <h2>Please select or drag a text file of barcodes with no header and a new line after each barcode</h2>
       <ngx-dropzone (change)="onSelect($event)" accept=".txt" [multiple]="false" #drop>
         <ngx-dropzone-label>Choose barcode file</ngx-dropzone-label>
         <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
