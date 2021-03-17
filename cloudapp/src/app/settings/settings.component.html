@@ -40,7 +40,7 @@
     <span *ngIf="!library.valid && library.touched"><p>Please choose a library</p></span>
     <div class="from" ngModelGroup="from" appFromvalidator #from="ngModelGroup">
       <mat-form-field>
-        <mat-label>Circulation desk (code)</mat-label>
+        <mat-label>Circulation desk</mat-label>
         <input
           matInput
           [matTooltip]="constants.circTip"
@@ -52,7 +52,7 @@
         />
       </mat-form-field>
       <mat-form-field>
-        <mat-label>Department (code)</mat-label>
+        <mat-label>Department</mat-label>
         <input
           matInput
           type="text"
