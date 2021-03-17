@@ -2,9 +2,9 @@ export class Constants {
   libraryTip =
     "The library code of the given circulation desk or department where the action is being performed";
   circTip =
-    "The circulation desk where the action is being performed. Send either this parameter or the department parameter.";
+    "The circulation desk where the action is being performed. Send either this parameter or the department parameter. The circulation desk code should be entered";
   departmentTip =
-    "The department where the action is being performed. Send either this parameter or the circ_desk parameter.";
+    "The department where the action is being performed. Send either this parameter or the circulation desk parameter. The department code should be entered";
   workOrderTip =
     "The work order type which is to be performed, or is being performed on the scanned in item.";
   statusTip =
