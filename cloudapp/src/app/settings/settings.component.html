@@ -1,16 +1,24 @@
-
 <ng-template #loading_spinner>
   <div class="loading-shade">
-    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <mat-progress-spinner
+      mode="indeterminate"
+      diameter="50"
+    ></mat-progress-spinner>
   </div>
 </ng-template>
 <section>
-  <form (ngSubmit)="onSubmit(form)" #form="ngForm" *ngIf="!loading; else loading_spinner">
+  <form
+    (ngSubmit)="onSubmit(form)"
+    #form="ngForm"
+    *ngIf="!loading; else loading_spinner"
+  >
     <div class="eca-actions">
       <a [routerLink]="['']" style="float: right">
-          <button mat-flat-button color="secondary"><mat-icon>arrow_back</mat-icon>Back</button>
-        </a>
-        <button
+        <button mat-flat-button color="secondary">
+          <mat-icon>arrow_back</mat-icon>Back
+        </button>
+      </a>
+      <button
         mat-flat-button
         color="secondary"
         type="button"
@@ -19,10 +27,16 @@
       >
         Restore Defaults
       </button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="!form.valid">Save</button>
-
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="!form.valid"
+      >
+        Save
+      </button>
     </div>
-    
+
     <h1>Settings</h1>
     <mat-form-field>
       <mat-label>Library</mat-label>
@@ -34,10 +48,14 @@
         #library="ngModel"
         [(ngModel)]="config.mustConfig.library"
       >
-        <mat-option *ngFor="let lib of libraries" [value]="lib.code">{{ lib.name }}</mat-option>
+        <mat-option *ngFor="let lib of libraries" [value]="lib.code">{{
+          lib.name
+        }}</mat-option>
       </mat-select>
     </mat-form-field>
-    <span *ngIf="!library.valid && library.touched"><p>Please choose a library</p></span>
+    <span *ngIf="!library.valid && library.touched"
+      ><p>Please choose a library</p></span
+    >
     <div class="from" ngModelGroup="from" appFromvalidator #from="ngModelGroup">
       <mat-form-field>
         <mat-label>Circulation desk</mat-label>
@@ -65,8 +83,34 @@
       </mat-form-field>
     </div>
     <span *ngIf="!from.valid && from.touched"
-      ><p>Please choose either circulation desk or department, but not both.</p></span
+      ><p>
+        Please choose either circulation desk or department, but not both.
+      </p></span
     >
+    <mat-form-field>
+      <mat-label>Work order type</mat-label>
+      <input
+        matInput
+        type="text"
+        [matTooltip]="constants.workOrderTypeTip"
+        ngModel
+        name="work_order_type"
+        [(ngModel)]="config.mustConfig.work_order_type"
+        #work_order_type
+      />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Status</mat-label>
+      <input
+        matInput
+        type="text"
+        [matTooltip]="constants.statusTip"
+        ngModel
+        name="status"
+        [(ngModel)]="config.mustConfig.status"
+      />
+    </mat-form-field>
+
     <mat-slide-toggle
       name="auto_print_slip"
       [matTooltip]="constants.autoPrintSlipTip"

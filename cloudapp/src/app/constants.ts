@@ -5,15 +5,13 @@ export class Constants {
     "The circulation desk where the action is being performed. Send either this parameter or the department parameter. The circulation desk code should be entered";
   departmentTip =
     "The department where the action is being performed. Send either this parameter or the circulation desk parameter. The department code should be entered";
-  workOrderTip =
+  statusTip = "The work order status to which we want to move the item.";
+  doneTip = "Work order processing is completed on the item.";
+  autoPrintSlipTip = "Automatically print a slip.";
+  placeOnHoldShelfTip = "Place on hold shelf.";
+  confirmTip = "Confirm the action on the item.";
+  registerInHouseUseTip = "Register in house uses.";
+  externalIdTip = "External ID.";
+  workOrderTypeTip =
     "The work order type which is to be performed, or is being performed on the scanned in item.";
-  statusTip =
-    "The work order status to which we want to move the item. Optional input is defined by the work order type.";
-  doneTip =
-    "Work order processing is completed on the item. Options: true or false. Only relevant when department parameter is sent.";
-  autoPrintSlipTip = "Automatically print a slip. Options: true or false.";
-  placeOnHoldShelfTip = "Place on hold shelf. Options: true or false.";
-  confirmTip = "Confirm the action on the item. Options: true or false.";
-  registerInHouseUseTip = "Register in house uses. Options: true or false.";
-  externalIdTip= "External ID. Options: true or false.";
 }
