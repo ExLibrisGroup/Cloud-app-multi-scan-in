@@ -2,7 +2,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { MaterialModule, getTranslateModule, AlertModule } from "@exlibris/exl-cloudapp-angular-lib";
+import { MaterialModule, CloudAppTranslateModule, AlertModule } from "@exlibris/exl-cloudapp-angular-lib";
 import { ToastrModule } from "ngx-toastr";
 import { MatInputModule } from "@angular/material/input";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -51,7 +51,7 @@ export function getToastrModule() {
     MatRadioModule,
     MatSlideToggleModule,
     NgxDropzoneModule,
-    getTranslateModule(),
+    CloudAppTranslateModule.forRoot(),
     getToastrModule(),
   ],
   providers: [],
