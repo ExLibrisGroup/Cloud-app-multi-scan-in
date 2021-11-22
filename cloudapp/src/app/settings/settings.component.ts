@@ -41,6 +41,10 @@ export class SettingsComponent implements OnInit {
       next: (value) => {
         this.libraries = value.rest.library as Library[];
 
+        let emptyLib: Library = { link:"", code:"INST_LEVEL", path:"", name:"Institution Level", description:"",
+                      resource_sharing:null, campus: null, proxy:"", default_location:null};
+        this.libraries.unshift(emptyLib);
+
         if (value.config && Object.keys(value.config).length !== 0) {
           this.config = value.config;
         }

@@ -146,6 +146,7 @@ export class MainComponent implements OnInit {
     let queryParams = { op: "scan", ...this.config.mustConfig, ...this.config?.from };
     queryParams.department !== "" ? (queryParams = { ...queryParams, ...this.config.departmentArgs }) : null;
     queryParams.circ_desk !== "" ? (queryParams = { ...queryParams, ...this.config.departmentArgs }) : null;
+    queryParams.library == "INST_LEVEL" ? queryParams.library = "" : null;
     return queryParams;
   }
 
