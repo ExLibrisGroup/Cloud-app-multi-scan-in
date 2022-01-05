@@ -1,11 +1,10 @@
 import { Constants } from "./../constants";
 import { Library } from "./../models/library.model";
-import { ToastrService } from "ngx-toastr";
-import { Component, OnInit } from "@angular/core";
+import { CirculationDesk } from "./../models/circulation-desk.model";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import {
   AlertService,
-  CloudAppConfigService,
   CloudAppRestService,
   CloudAppSettingsService,
   RestErrorResponse,
@@ -13,6 +12,8 @@ import {
 import { Configuration } from "../models/configuration.model";
 import { forkJoin } from "rxjs";
 import { Router } from "@angular/router";
+import { MatSelectChange } from "@angular/material/select";
+import { finalize } from "rxjs/operators";
 
 @Component({
   selector: "app-settings",
@@ -23,6 +24,7 @@ export class SettingsComponent implements OnInit {
   constants: Constants = new Constants();
   config: Configuration = new Configuration();
   libraries: Library[] = [];
+  circulation_desks: CirculationDesk[] = [];
   loading: boolean = false;
 
   constructor(
@@ -75,5 +77,24 @@ export class SettingsComponent implements OnInit {
   }
   onRestore() {
     this.config = new Configuration();
+  }
+  onLibraryChange(event: MatSelectChange){
+    this.loading = true;
+    let code = event.value;
+    this.restService.call("/conf/libraries/"+code+"/circ-desks").pipe(finalize(
+      () => {
+        this.loading = false;
+        this.config.from.circ_desk = "";
+      })).subscribe({
+        next: (res) => {
+          this.circulation_desks = res.circ_desk
+          this.config.from.circ_desk
+          
+        },
+        error: (err: RestErrorResponse) => {
+          this.circulation_desks = [];
+          console.error(err.message);
+        }
+      });
   }
 }

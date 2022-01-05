@@ -47,6 +47,7 @@
         required
         #library="ngModel"
         [(ngModel)]="config.mustConfig.library"
+        (selectionChange)="onLibraryChange($event)"
       >
         <mat-option *ngFor="let lib of libraries" [value]="lib.code">{{
           lib.name
@@ -59,15 +60,17 @@
     <div class="from" ngModelGroup="from" appFromvalidator #from="ngModelGroup">
       <mat-form-field>
         <mat-label>Circulation desk</mat-label>
-        <input
-          matInput
+        <mat-select
           [matTooltip]="constants.circTip"
-          type="text"
           ngModel
           name="circ_desk"
           [(ngModel)]="config.from.circ_desk"
           #circ_desk
-        />
+        >
+        <mat-option *ngFor="let circ of circulation_desks" [value]="circ.code">{{
+          circ.name
+        }}</mat-option>
+      </mat-select>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Department</mat-label>
