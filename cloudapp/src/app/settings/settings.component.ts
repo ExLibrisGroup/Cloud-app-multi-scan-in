@@ -1,7 +1,7 @@
 import { Constants } from "./../constants";
 import { Library } from "./../models/library.model";
 import { CirculationDesk } from "./../models/circulation-desk.model";
-import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import {
   AlertService,
@@ -12,7 +12,6 @@ import {
 import { Configuration } from "../models/configuration.model";
 import { forkJoin } from "rxjs";
 import { Router } from "@angular/router";
-import { MatSelectChange } from "@angular/material/select";
 import { finalize } from "rxjs/operators";
 
 @Component({
@@ -42,13 +41,14 @@ export class SettingsComponent implements OnInit {
     forkJoin({ rest, config }).subscribe({
       next: (value) => {
         this.libraries = value.rest.library as Library[];
-
+  
         let emptyLib: Library = { link:"", code:"INST_LEVEL", path:"", name:"Institution Level", description:"",
                       resource_sharing:null, campus: null, proxy:"", default_location:null};
         this.libraries.unshift(emptyLib);
 
         if (value.config && Object.keys(value.config).length !== 0) {
           this.config = value.config;
+          this.onLibraryChange(value.config.mustConfig.library, true);
         }
       },
       error: (err) => {
@@ -67,7 +67,7 @@ export class SettingsComponent implements OnInit {
     this.settingsService.set(this.config).subscribe({
       next: () => {
         this.alert.success("Updated Successfully", { keepAfterRouteChange: true });
-        this.router.navigate([""]);
+        this.router.navigate([""]);   
       },
       error: (err: RestErrorResponse) => {
         console.error(err.message);
@@ -78,18 +78,18 @@ export class SettingsComponent implements OnInit {
   onRestore() {
     this.config = new Configuration();
   }
-  onLibraryChange(event: MatSelectChange){
+  onLibraryChange(circ_code: string, init=false){
     this.loading = true;
-    let code = event.value;
+    let code = circ_code;
     this.restService.call("/conf/libraries/"+code+"/circ-desks").pipe(finalize(
       () => {
         this.loading = false;
-        this.config.from.circ_desk = "";
+        if (!init) {
+          this.config.from.circ_desk = "";
+        }
       })).subscribe({
         next: (res) => {
           this.circulation_desks = res.circ_desk
-          this.config.from.circ_desk
-          
         },
         error: (err: RestErrorResponse) => {
           this.circulation_desks = [];

@@ -47,7 +47,7 @@
         required
         #library="ngModel"
         [(ngModel)]="config.mustConfig.library"
-        (selectionChange)="onLibraryChange($event)"
+        (selectionChange)="onLibraryChange($event.value)"
       >
         <mat-option *ngFor="let lib of libraries" [value]="lib.code">{{
           lib.name
