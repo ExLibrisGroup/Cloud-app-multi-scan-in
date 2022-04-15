@@ -122,6 +122,7 @@ export class MainComponent implements OnInit {
         let requst: Request = {
           url: res.link,
           method: HttpMethod.POST,
+          requestBody: {},
           queryParams,
         };
         return this.restService.call(requst).pipe(
