@@ -12,7 +12,9 @@ import {
 import { Configuration } from "../models/configuration.model";
 import { forkJoin } from "rxjs";
 import { Router } from "@angular/router";
-import { finalize } from "rxjs/operators";
+import { finalize, map } from "rxjs/operators";
+import { Departments } from "../models/departments.model";
+import { Statuses } from "../models/statuses.model";
 
 @Component({
   selector: "app-settings",
@@ -24,7 +26,10 @@ export class SettingsComponent implements OnInit {
   config: Configuration = new Configuration();
   libraries: Library[] = [];
   circulation_desks: CirculationDesk[] = [];
+  departments : Departments[] = [];
+  statuses : Statuses[] = [];
   loading: boolean = false;
+  work_order_types :string[] =[];
 
   constructor(
     private settingsService: CloudAppSettingsService,
@@ -42,7 +47,7 @@ export class SettingsComponent implements OnInit {
       next: (value) => {
         this.libraries = value.rest.library as Library[];
   
-        let emptyLib: Library = { link:"", code:"INST_LEVEL", path:"", name:"Institution Level", description:"",
+        let emptyLib: Library = { link:"", code:"", path:"", name:"Institution Level", description:"",
                       resource_sharing:null, campus: null, proxy:"", default_location:null};
         this.libraries.unshift(emptyLib);
 
@@ -81,20 +86,91 @@ export class SettingsComponent implements OnInit {
   onLibraryChange(circ_code: string, init=false){
     this.loading = true;
     let code = circ_code;
-    this.restService.call("/conf/libraries/"+code+"/circ-desks").pipe(finalize(
+    this.work_order_types = [];
+    this.statuses =[];
+    if (!init) {
+      this.config.from.circ_desk = "";
+      this.config.from.department = "";
+    }
+
+    let rests = [this.restService.call("/conf/departments?library="+code)];
+    if(code != ''){
+      rests.push(this.restService.call("/conf/libraries/"+code+"/circ-desks"));
+    }
+
+    forkJoin(rests)
+    .pipe(finalize(
       () => {
         this.loading = false;
         if (!init) {
           this.config.from.circ_desk = "";
         }
-      })).subscribe({
-        next: (res) => {
-          this.circulation_desks = res.circ_desk
+      }))
+        .subscribe({
+        next: (res ) => {
+          this.departments = res[0].department;
+          this.departments.unshift({name : ' ',code:'',type:{value : ' '} });
+          if(res.length >1){
+            this.circulation_desks = res[1].circ_desk
+            this.circulation_desks.unshift({name : ' ',code:'',link:''});
+          }
+          
         },
         error: (err: RestErrorResponse) => {
           this.circulation_desks = [];
+          this.departments = [];
           console.error(err.message);
         }
       });
+      
   }
+
+  
+  onCircDeskOrDepartmentChange(circ_desk : string,department_code: string){
+    this.work_order_types =[];
+    this.statuses =[];
+    if(circ_desk != undefined && circ_desk != ''){
+      this.restService.call("/conf/departments?library="+this.config.mustConfig.library).pipe(finalize(
+        () => {
+          this.loading = false;
+        })).subscribe({
+          next: (res) => {
+            res.department.forEach(department => department.circ_desk?.value === circ_desk ? this.work_order_types.push(department.type.value): '');
+            this.work_order_types.unshift(' ');
+          },
+          error: (err: RestErrorResponse) => {
+            console.error(err.message);
+          }
+        });
+    }else if(department_code != undefined && department_code != ''){
+      this.onDepartmentChange(department_code);
+    }
+  }
+
+  onDepartmentChange(department_code: string){
+    this.departments.forEach(d => {
+      if(d.code == department_code){
+        this.work_order_types = [d.type.value];
+        this.onWorkOrderTypeChange(d.type.value);
+        return;
+      }
+    });
+  }
+
+  onWorkOrderTypeChange(work_order_type: string){
+    this.restService.call("/conf/mapping-tables/WorkOrderTypeStatuses?scope="+this.config.mustConfig.library).pipe(finalize(
+      () => {
+        this.loading = false;
+      })).subscribe({
+        next: (res) => {
+          this.statuses = res.row.filter(row => row.column0 ==work_order_type );
+          this.statuses.unshift({column2 : ' ',column1 : ' ',column0:''});
+        },
+        error: (err: RestErrorResponse) => {
+          this.statuses = [];
+          console.error(err.message);
+        }
+      }); 
+  }
+
 }

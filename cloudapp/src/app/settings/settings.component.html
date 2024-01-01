@@ -66,6 +66,7 @@
           name="circ_desk"
           [(ngModel)]="config.from.circ_desk"
           #circ_desk
+          (selectionChange)="onCircDeskOrDepartmentChange(config.from.circ_desk,config.from.department)"
         >
         <mat-option *ngFor="let circ of circulation_desks" [value]="circ.code">{{
           circ.name
@@ -74,15 +75,18 @@
       </mat-form-field>
       <mat-form-field>
         <mat-label>Department</mat-label>
-        <input
-          matInput
-          type="text"
-          [matTooltip]="constants.departmentTip"
+        <mat-select
           ngModel
           name="department"
+          [matTooltip]="constants.departmentTip"
           [(ngModel)]="config.from.department"
+          (selectionChange)="onCircDeskOrDepartmentChange(config.from.circ_desk,config.from.department)"
           #department
-        />
+        >
+        <mat-option *ngFor="let department of departments" [value]="department.code">{{
+          department.name
+        }}</mat-option>
+      </mat-select>
       </mat-form-field>
     </div>
     <span *ngIf="!from.valid && from.touched"
@@ -92,26 +96,32 @@
     >
     <mat-form-field>
       <mat-label>Work order type</mat-label>
-      <input
-        matInput
-        type="text"
+      <mat-select
         [matTooltip]="constants.workOrderTypeTip"
         ngModel
         name="work_order_type"
         [(ngModel)]="config.mustConfig.work_order_type"
         #work_order_type
-      />
+        (selectionChange)="onWorkOrderTypeChange($event.value)"
+      >
+      <mat-option *ngFor="let type of work_order_types" [value]="type">{{
+         type
+      }}</mat-option>
+      </mat-select>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Status</mat-label>
-      <input
-        matInput
-        type="text"
+      <mat-select
+        #status
         [matTooltip]="constants.statusTip"
         ngModel
         name="status"
         [(ngModel)]="config.mustConfig.status"
-      />
+      >
+      <mat-option *ngFor="let status of statuses" [value]="status.column1">{{
+        status.column2
+      }}</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-slide-toggle
