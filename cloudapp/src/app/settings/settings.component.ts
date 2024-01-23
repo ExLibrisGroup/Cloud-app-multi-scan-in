@@ -47,7 +47,7 @@ export class SettingsComponent implements OnInit {
       next: (value) => {
         this.libraries = value.rest.library as Library[];
   
-        let emptyLib: Library = { link:"", code:"", path:"", name:"Institution Level", description:"",
+        let emptyLib: Library = { link:"", code:"INST_LEVEL", path:"", name:"Institution Level", description:"",
                       resource_sharing:null, campus: null, proxy:"", default_location:null};
         this.libraries.unshift(emptyLib);
 
@@ -85,7 +85,7 @@ export class SettingsComponent implements OnInit {
   }
   onLibraryChange(circ_code: string, init=false){
     this.loading = true;
-    let code = circ_code;
+    let code = circ_code == "INST_LEVEL" ? "" : circ_code;
     this.work_order_types = [];
     this.statuses =[];
     if (!init) {
@@ -130,7 +130,8 @@ export class SettingsComponent implements OnInit {
     this.work_order_types =[];
     this.statuses =[];
     if(circ_desk != undefined && circ_desk != ''){
-      this.restService.call("/conf/departments?library="+this.config.mustConfig.library).pipe(finalize(
+      const library = this.config.mustConfig.library == "INST_LEVEL" ?  "" : this.config.mustConfig.library;
+      this.restService.call("/conf/departments?library="+library).pipe(finalize(
         () => {
           this.loading = false;
         })).subscribe({
@@ -158,7 +159,8 @@ export class SettingsComponent implements OnInit {
   }
 
   onWorkOrderTypeChange(work_order_type: string){
-    this.restService.call("/conf/mapping-tables/WorkOrderTypeStatuses?scope="+this.config.mustConfig.library).pipe(finalize(
+    const library = this.config.mustConfig.library == "INST_LEVEL" ?  "" : this.config.mustConfig.library;
+    this.restService.call("/conf/mapping-tables/WorkOrderTypeStatuses?scope="+library).pipe(finalize(
       () => {
         this.loading = false;
       })).subscribe({

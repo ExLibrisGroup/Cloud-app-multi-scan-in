@@ -73,21 +73,28 @@
         }}</mat-option>
       </mat-select>
       </mat-form-field>
-      <mat-form-field>
+     
+      <mat-form-field >
         <mat-label>Department</mat-label>
-        <mat-select
-          ngModel
-          name="department"
-          [matTooltip]="constants.departmentTip"
-          [(ngModel)]="config.from.department"
-          (selectionChange)="onCircDeskOrDepartmentChange(config.from.circ_desk,config.from.department)"
-          #department
-        >
-        <mat-option *ngFor="let department of departments" [value]="department.code">{{
-          department.name
-        }}</mat-option>
-      </mat-select>
-      </mat-form-field>
+            <input *ngIf="departments?.length === 0"  
+                matInput type="text"
+                value="departments.lenght"
+                [matTooltip]="departments.lenght"
+                ngModel name="department" [(ngModel)]="config.from.department"
+                #department/> 
+            <mat-select *ngIf="departments?.length > 0"
+                ngModel
+                name="department"
+                [matTooltip]="constants.departmentTip"
+                [(ngModel)]="config.from.department"
+                (selectionChange)="onCircDeskOrDepartmentChange(config.from.circ_desk,config.from.department)"
+                #department >
+                <mat-option *ngFor="let department of departments" [value]="department.code">{{
+                  department.name
+                }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
     </div>
     <span *ngIf="!from.valid && from.touched"
       ><p>
@@ -166,7 +173,7 @@
     >
     <br />
 
-    <div class="department-options" *ngIf="department.value !== ''">
+    <div class="department-options" *ngIf="department?.value !== ''">
       <mat-slide-toggle
         name="done"
         [matTooltip]="constants.doneTip"
@@ -178,7 +185,7 @@
       >
       <br />
     </div>
-    <div class="circ-options" *ngIf="circ_desk.value !== ''">
+    <div class="circ-options" *ngIf="circ_desk?.value !== ''">
       <mat-slide-toggle
         name="place_on_hold_shelf"
         [matTooltip]="constants.placeOnHoldShelfTip"
