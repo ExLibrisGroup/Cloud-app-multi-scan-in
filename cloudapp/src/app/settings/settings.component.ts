@@ -10,9 +10,9 @@ import {
   RestErrorResponse,
 } from "@exlibris/exl-cloudapp-angular-lib";
 import { Configuration } from "../models/configuration.model";
-import { forkJoin } from "rxjs";
+import { forkJoin, of } from "rxjs";
 import { Router } from "@angular/router";
-import { finalize, map } from "rxjs/operators";
+import { catchError, finalize, map } from "rxjs/operators";
 import { Departments } from "../models/departments.model";
 import { Statuses } from "../models/statuses.model";
 
@@ -93,7 +93,7 @@ export class SettingsComponent implements OnInit {
       this.config.from.department = "";
     }
 
-    let rests = [this.restService.call("/conf/departments?library="+code)];
+    let rests = [this.getDepartmentData(code)];
     if(code != ''){
       rests.push(this.restService.call("/conf/libraries/"+code+"/circ-desks"));
     }
@@ -108,11 +108,15 @@ export class SettingsComponent implements OnInit {
       }))
         .subscribe({
         next: (res ) => {
-          this.departments = res[0].department;
-          this.departments.unshift({name : ' ',code:'',type:{value : ' '} });
+          if(res[0] != null){
+            this.departments = res[0].department;
+            this.departments.unshift({name : ' ',code:'',type:{value : ' '} });
+          }
           if(res.length >1){
             this.circulation_desks = res[1].circ_desk
             this.circulation_desks.unshift({name : ' ',code:'',link:''});
+          }else{
+            this.circulation_desks = [];
           }
           
         },
@@ -123,6 +127,19 @@ export class SettingsComponent implements OnInit {
         }
       });
       
+  }
+
+
+  getDepartmentData(code) {
+    return this.restService.call("/conf/departments?library="+code).pipe(
+      catchError((error) => {
+        // Handle errors from the department API
+        this.departments = [];
+        console.error(error.message);
+        // Return a placeholder value or an empty observable to continue with the other API
+        return of(null);
+      })
+    );
   }
 
   
