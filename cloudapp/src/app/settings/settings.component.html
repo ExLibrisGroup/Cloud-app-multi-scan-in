@@ -102,7 +102,16 @@
     >
     <mat-form-field>
       <mat-label>Work order type</mat-label>
-      <mat-select
+      <input *ngIf="work_order_types?.length === 0"  
+        matInput
+        type="text"
+        [matTooltip]="constants.workOrderTypeTip"
+        ngModel
+        name="work_order_type"
+        [(ngModel)]="config.mustConfig.work_order_type"
+        #work_order_type
+      />
+      <mat-select *ngIf="work_order_types?.length > 0"
         [matTooltip]="constants.workOrderTypeTip"
         ngModel
         name="work_order_type"
@@ -117,7 +126,15 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label>Status</mat-label>
-      <mat-select
+      <input *ngIf="statuses?.length === 0"  
+        matInput
+        type="text"
+        [matTooltip]="constants.statusTip"
+        ngModel
+        name="status"
+        [(ngModel)]="config.mustConfig.status"
+      />
+      <mat-select  *ngIf="statuses?.length > 0"
         #status
         [matTooltip]="constants.statusTip"
         ngModel
