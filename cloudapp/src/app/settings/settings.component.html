@@ -78,8 +78,7 @@
         <mat-label>Department</mat-label>
             <input *ngIf="departments?.length === 0"  
                 matInput type="text"
-                value="departments.lenght"
-                [matTooltip]="departments.lenght"
+                [matTooltip]="constants.departmentTip"
                 ngModel name="department" [(ngModel)]="config.from.department"
                 #department/> 
             <mat-select *ngIf="departments?.length > 0"
@@ -173,7 +172,7 @@
     >
     <br />
 
-    <div class="department-options" *ngIf="department?.value !== ''">
+    <div class="department-options" *ngIf="config.from.department !== ''">
       <mat-slide-toggle
         name="done"
         [matTooltip]="constants.doneTip"

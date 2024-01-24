@@ -104,6 +104,8 @@ export class SettingsComponent implements OnInit {
         this.loading = false;
         if (!init) {
           this.config.from.circ_desk = "";
+        }else{
+          this.onCircDeskOrDepartmentChange(this.config.from.circ_desk, this.config.from.department);
         }
       }))
         .subscribe({
@@ -176,7 +178,12 @@ export class SettingsComponent implements OnInit {
   }
 
   onWorkOrderTypeChange(work_order_type: string){
+    if(work_order_type ==' '){
+      this.statuses = [{column2 : ' ',column1 : ' ',column0:''}];
+      return;
+    }
     const library = this.config.mustConfig.library == "INST_LEVEL" ?  "" : this.config.mustConfig.library;
+    this.loading = true;
     this.restService.call("/conf/mapping-tables/WorkOrderTypeStatuses?scope="+library).pipe(finalize(
       () => {
         this.loading = false;
