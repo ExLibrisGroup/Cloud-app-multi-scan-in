@@ -95,7 +95,7 @@ export class SettingsComponent implements OnInit {
 
     let rests = [this.getDepartmentData(code)];
     if(code != ''){
-      rests.push(this.restService.call("/conf/libraries/"+code+"/circ-desks"));
+      rests.push(this.restService.call("/conf/libraries/"+code+"/circ-desks?limit=100"));
     }
 
     forkJoin(rests)
