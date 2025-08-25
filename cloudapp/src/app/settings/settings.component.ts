@@ -177,26 +177,52 @@ export class SettingsComponent implements OnInit {
     });
   }
 
-  onWorkOrderTypeChange(work_order_type: string){
-    if(work_order_type ==' '){
-      this.statuses = [{column2 : ' ',column1 : ' ',column0:''}];
-      return;
-    }
-    const library = this.config.mustConfig.library == "INST_LEVEL" ?  "" : this.config.mustConfig.library;
-    this.loading = true;
-    this.restService.call("/conf/mapping-tables/WorkOrderTypeStatuses?scope="+library).pipe(finalize(
-      () => {
-        this.loading = false;
-      })).subscribe({
-        next: (res) => {
-          this.statuses = res.row.filter(row => row.column0 ==work_order_type );
-          this.statuses.unshift({column2 : ' ',column1 : ' ',column0:''});
-        },
-        error: (err: RestErrorResponse) => {
-          this.statuses = [];
-          console.error(err.message);
-        }
-      }); 
-  }
+  onWorkOrderTypeChange(work_order_type: string) {
+	  if (work_order_type === ' ') {
+		this.statuses = [{ column2: ' ', column1: ' ', column0: '' }];
+		return;
+	  }
+
+	  const library = this.config.mustConfig.library;
+	  const baseUrl = "/conf/mapping-tables/WorkOrderTypeStatuses?";
+	  
+	  this.loading = true;
+
+	  // Always call the base API
+	  const baseCall$ = this.restService.call(baseUrl).pipe(
+		catchError(() => of({ row: [] })) // prevent breaking if one call fails
+	  );
+
+	  // Conditionally call the scoped API
+	  const scopedCall$ = (library !== "INST_LEVEL")
+		? this.restService.call(baseUrl + "scope=" + library).pipe(
+			catchError(() => of({ row: [] }))
+		  )
+		: of({ row: [] });
+
+	  forkJoin([baseCall$, scopedCall$]).pipe(
+		finalize(() => this.loading = false)
+	  ).subscribe({
+		next: ([baseRes, scopedRes]) => {
+		  const seen = new Set<string>();
+
+		  const allRows = [...baseRes.row, ...scopedRes.row].filter(row => {
+			  // create a unique key based on all columns
+			  const key = JSON.stringify(row);
+			  if (seen.has(key)) {
+				return false; // duplicate
+			  }
+			  seen.add(key);
+			  return true;
+		  });
+		  this.statuses = allRows.filter(row => row.column0 === work_order_type);
+		  this.statuses.unshift({ column2: ' ', column1: ' ', column0: '' });
+		},
+		error: (err: RestErrorResponse) => {
+		  this.statuses = [];
+		  console.error(err.message);
+		}
+	  });
+}
 
 }
